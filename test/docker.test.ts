@@ -40,7 +40,10 @@ describe("DockerSandbox (needs Docker and the base image)", { skip: ready ? fals
 
   test("commands are passed verbatim (quotes, $, newlines, unicode)", async () => {
     const r = await sb.exec(`x='a "b" $HOME'; printf '%s\\n' "$x"\necho "üñí 漢字"`);
-    assert.equal(r.output.trim(), 'a "b" /root\nüñí 漢字');
+    // Single quotes must survive the trip, so $HOME stays literal: the command is passed verbatim.
+    assert.equal(r.output.trim(), 'a "b" $HOME\nüñí 漢字');
+    // And without single quotes the sandbox's own shell expands it, proving it runs as a real shell.
+    assert.equal((await sb.exec("echo $HOME")).output.trim(), "/root");
   });
 
   test("cwd parameter and missing directories", async () => {
