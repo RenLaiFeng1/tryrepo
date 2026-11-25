@@ -1,0 +1,51 @@
+{
+  "name": "tryrepo",
+  "version": "0.1.0",
+  "description": "Paste a GitHub URL. Your own coding agent gets the project running in a local Docker sandbox.",
+  "keywords": [
+    "github",
+    "docker",
+    "sandbox",
+    "ai-agent",
+    "claude-code",
+    "mcp",
+    "devtools",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "RenLaiFeng1",
+  "homepage": "https://github.com/RenLaiFeng1/tryrepo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RenLaiFeng1/tryrepo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RenLaiFeng1/tryrepo/issues"
+  },
+  "type": "module",
+  "bin": {
+    "tryrepo": "dist/src/cli.js"
+  },
+  "files": [
+    "dist/src",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test --test-concurrency=1 \"dist/test/**/*.test.js\"",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.6"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/node": "^20.19.0",
+    "typescript": "^7.0.2"
+  }
+}
