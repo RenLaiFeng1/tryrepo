@@ -111,6 +111,12 @@ test("verify_start explains each failure mode", async () => {
   assert.match(exited.text, /Error: boom/);
   sandbox.verifyResult = { status: "timeout", httpCode: "000", localCode: "000", seconds: 120, log: "" };
   assert.match((await h.call("verify_start", { port: 1, timeout_sec: 120 })).text, /nothing answered HTTP on port 1 within 120s/);
+  // An error response is not a working app: it must not count as verified.
+  sandbox.verifyResult = { status: "ok", httpCode: "500", localCode: "000", seconds: 1, log: "Traceback" };
+  const errorResponse = await h.call("verify_start", { port: 1 });
+  assert.equal(errorResponse.isError, true);
+  assert.match(errorResponse.text, /HTTP 500/);
+  assert.equal(h.verified.size, 0);
 });
 
 test("cli success and failure reports", async () => {

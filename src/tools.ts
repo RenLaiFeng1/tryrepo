@@ -335,6 +335,12 @@ export class ToolHost {
       const log = r.log.trim() ? `\n--- start.sh output (last lines) ---\n${r.log.trim()}` : "\n(start.sh printed nothing)";
       switch (r.status) {
         case "ok":
+          if (Number(r.httpCode) >= 400) {
+            return {
+              text: `FAILED: port ${port}${path} answered HTTP ${r.httpCode} after ${r.seconds}s, which is an error response. The app must answer with a success code (2xx or 3xx) before it can be reported as working.${log}`,
+              isError: true,
+            };
+          }
           this.verified.set(port, path);
           return {
             text: `PASSED: port ${port}${path} answered HTTP ${r.httpCode} after ${r.seconds}s in a fresh start.${log}`,
