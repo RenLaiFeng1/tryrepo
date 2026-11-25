@@ -195,6 +195,13 @@ async function cmdRun(input: string, values: Values, ui: Ui): Promise<number> {
   if (source.type === "git" && !values.refresh) {
     const saved = loadRecipe(source.key);
     if (saved && (await imageExists(saved.image))) {
+      const missing = saved.requiredEnv.filter((e) => e.required && !(e.name in secretEnv));
+      if (missing.length) {
+        throw new UserError(
+          `This app needs ${missing.map((e) => e.name).join(", ")} to run.`,
+          `Provide ${missing.length > 1 ? "them" : "it"} with: tryrepo ${source.display} ${missing.map((e) => `-e ${e.name}`).join(" ")}`,
+        );
+      }
       recipe = saved;
       cached = true;
       const when = new Date(saved.createdAt).toLocaleDateString();

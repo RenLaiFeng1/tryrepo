@@ -102,6 +102,11 @@ describe("DockerSandbox (needs Docker and the base image)", { skip: ready ? fals
     await assert.rejects(() => sb.writeFile("/workspace", "x"));
   });
 
+  test("startBackground fails visibly when the directory does not exist", async () => {
+    await assert.rejects(() => sb.startBackground("echo should-not-run", { cwd: "/nope" }), /directory not found/);
+    assert.equal((await sb.exec("echo still-alive")).output.trim(), "still-alive");
+  });
+
   test("startBackground returns immediately and logs to a file", async () => {
     const started = Date.now();
     const bg = await sb.startBackground("echo hello-bg; sleep 120");

@@ -266,7 +266,8 @@ export async function build(opts: BuildOptions): Promise<BuildResult> {
     return result;
   } finally {
     result.buildMs = Date.now() - started;
-    if (created && !opts.keep) await removeContainer(name);
+    // A cancelled run keeps the container only when the user asked to; otherwise it leaks.
+    if (created && !(opts.keep && !opts.signal.aborted)) await removeContainer(name);
     writeFileSync(
       join(runDir, "result.json"),
       `${JSON.stringify({ ...result, source: source.display, buildTime: formatDuration(result.buildMs) }, null, 2)}\n`,

@@ -63,8 +63,10 @@ const BACKGROUND_SCRIPT = `set -u
 d=/tmp/tryrepo; mkdir -p "$d"
 f="$d/bg-$3.sh"
 cat > "$f"
+# Check the directory in the foreground: once setsid backgrounds the process, a failure
+# there would be invisible and the tool would report a successful start.
 cd "$1" 2>/dev/null || { printf 'tryrepo: directory not found: %s\\n' "$1" >&2; exit 97; }
-setsid bash -l "$f" </dev/null >"$2" 2>&1 &
+setsid bash -l -c 'cd "$1" && exec bash -l "$2"' -- "$1" "$f" </dev/null >"$2" 2>&1 &
 printf '%s\\n' "$!"`;
 
 const WRITE_SCRIPT = `set -eu
